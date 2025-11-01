@@ -1,12 +1,10 @@
 module StudyBuddy
 
-go 1.23.8
+go 1.24.1
 
 toolchain go1.24.7
 
-require gioui.org v0.8.0
-
-require golang.org/x/exp v0.0.0-20240707233637-46b078467d37 // indirect
+require gioui.org v0.9.0
 
 require (
 	gioui.org/shader v1.0.8 // indirect
