@@ -94,7 +94,3 @@ func (a *App) layoutOption(gtx layout.Context, i int) layout.Dimensions {
 	}
 	return btn.Layout(gtx)
 }
-
-//TODO
-// Animate the feedback (Correct! vs Wrong) in the UI
-// Slight delay before moving to the next question

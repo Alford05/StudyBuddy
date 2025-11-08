@@ -57,6 +57,7 @@ type App struct {
 
 	QuestionBuffer chan Question
 	PreloadDone    chan struct{}
+	StopPreload    chan struct{}
 }
 
 func main() {
@@ -90,6 +91,7 @@ func main() {
 			Window:         &w,
 			QuestionBuffer: make(chan Question, 1),
 			PreloadDone:    make(chan struct{}),
+			StopPreload:    make(chan struct{}),
 		}
 		myApp.WordInput.SingleLine = false
 

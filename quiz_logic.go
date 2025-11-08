@@ -9,11 +9,21 @@ func (a *App) startPreloading() {
 	go func() {
 		defer close(a.PreloadDone)
 		for {
+			select {
+			case <-a.StopPreload:
+				log.Println("Preloading stopped.")
+				return
+			default:
+			}
 			if len(a.QuestionBuffer) >= cap(a.QuestionBuffer) {
 				time.Sleep(50 * time.Millisecond)
 				continue
 			}
 			preloadIndex := a.CurrentIndex + 1
+			if preloadIndex >= 15 {
+				log.Println("✅ All questions preloaded.")
+				return
+			}
 			var question Question
 			var err error
 			time.Sleep(3 * time.Second)
@@ -43,12 +53,3 @@ func (a *App) loadNextQuestion() {
 	a.State = ScreenQuiz
 	a.Window.Invalidate()
 }
-
-/* Helper function to generate question based on current index
-func (a *App) generateQuestion() (Question, error) {
-	if a.CurrentIndex < 10 {
-		return buildSingleWordQuestion(a.WordBank, a.CurrentIndex, a.APIKey, a.RNG)
-	}
-	return buildTwoWordQuestion(a.WordBank, a.APIKey, a.RNG)
-}
-*/
