@@ -20,7 +20,9 @@ func (a *App) layoutQuizCompleteScreen(gtx layout.Context) layout.Dimensions {
 			layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 				btn := material.Button(a.Theme, &a.RestartButton, "Restart Quiz")
 				if a.RestartButton.Clicked(gtx) {
-					if a.StopPreload != nil {
+					select {
+					case <-a.StopPreload:
+					default:
 						close(a.StopPreload)
 					}
 					a.CurrentIndex = 0
@@ -28,12 +30,24 @@ func (a *App) layoutQuizCompleteScreen(gtx layout.Context) layout.Dimensions {
 					a.ShowFeedback = false
 					a.FeedbackMsg = ""
 					a.ErrorMsg = ""
+
 					a.QuestionBuffer = make(chan Question, 1)
 					a.PreloadDone = make(chan struct{})
 					a.StopPreload = make(chan struct{})
+
+					question, err := buildSingleWordQuestion(a.WordBank, a.CurrentIndex, a.APIKey, a.RNG)
+					if err != nil {
+						a.ErrorMsg = "Error generating first question."
+						return btn.Layout(gtx)
+					}
+					a.CurrentQuestion = question
+
+					go a.startPreloading()
+
 					a.State = ScreenLoading
 					a.Window.Invalidate()
-					a.loadNextQuestion()
+
+					go a.loadNextQuestion()
 				}
 				return btn.Layout(gtx)
 			}),
