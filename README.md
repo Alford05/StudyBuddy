@@ -111,9 +111,9 @@ Loaded via:
 ```GO
     err := godotenv.Load()
     apiKey := os.Getenv("SecretKey")
+```
 if SecretKey is missing, the app logs:
     SecretKey variable not set.
-```
 
 ---
 
@@ -144,7 +144,7 @@ if SecretKey is missing, the app logs:
 
 ---
 
-TODO / Future Ideas
+## TODO / Future Ideas
 
     Add settings for:
         Number of questions
