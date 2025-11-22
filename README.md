@@ -89,3 +89,66 @@ echo "SecretKey=your_api_key_here" > .env
 
 go mod tidy
 go run .
+```
+
+---
+
+## Usage 
+
+Launch the app
+On the input screen:
+    Enter exactly 10 words (for now) 
+Click Start Quiz
+Answer each question by clicking 1 of 4 options
+View your score at the end and optionally restart with new questions generated from the same words
+
+---
+
+## Environment Variables 
+- 'SecretKey' - API key for the language model the app uses internally to generate questions 
+Loaded via:
+
+```GO
+    err := godotenv.Load()
+    apiKey := os.Getenv("SecretKey")
+if SecretKey is missing, the app logs:
+    SecretKey variable not set.
+```
+
+---
+
+## Architecture Overview
+
+    App struct:
+        Holds UI state (State, Theme, WordInput, buttons)
+        Quiz data (WordBank, CurrentQuestion, CurrentIndex, Score)
+        Feedback (FeedbackMsg, ShowFeedback, ErrorMsg)
+        Concurrency primitives:
+            QuestionBuffer chan Question
+            PreloadDone chan struct{}
+            StopPreload chan struct{}
+    Screens:
+        ScreenInput – enter 10 words and start quiz
+        ScreenLoading – transient loading view while waiting for next question
+        ScreenQuiz – question, options, feedback
+        QuizComplete – results and restart button
+    Question generation (external helpers you provide):
+        buildSingleWordQuestion(...)
+        buildTwoWordQuestion(...)
+    Preloading:
+        startPreloading runs in a goroutine
+        Fills QuestionBuffer up to capacity
+        Stops when:
+            StopPreload is closed, or
+            15 total questions are generated
+
+---
+
+TODO / Future Ideas
+
+    Add settings for:
+        Number of questions
+        Difficulty level
+    Support synonyms / definitions / fill‑in‑the‑blank modes
+    Persist scores and word lists
+    Package as downloadable binaries for major OSes
