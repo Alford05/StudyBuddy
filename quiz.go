@@ -43,7 +43,6 @@ func (a *App) layoutQuizCompleteScreen(gtx layout.Context) layout.Dimensions {
 					a.CurrentQuestion = question
 
 					go a.startPreloading()
-
 					a.State = ScreenLoading
 					a.Window.Invalidate()
 
